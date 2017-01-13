@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F7B71163-FBCE-412F-A1B5-3165993F67D4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1D68161E-2810-4C04-8ABE-4D555AF64493}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RaptorFileGenerator", "src\RaptorFileGenerator\RaptorFileGenerator.xproj", "{0885306A-A474-4ADC-949F-DF03BEC82841}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0885306A-A474-4ADC-949F-DF03BEC82841}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0885306A-A474-4ADC-949F-DF03BEC82841}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0885306A-A474-4ADC-949F-DF03BEC82841}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0885306A-A474-4ADC-949F-DF03BEC82841}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0885306A-A474-4ADC-949F-DF03BEC82841} = {F7B71163-FBCE-412F-A1B5-3165993F67D4}
+	EndGlobalSection
+EndGlobal
