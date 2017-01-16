@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RaptorFileGenerator
 {
-    public class FileDefinition
+    public class FileTemplate
     {
         private string _templatePath;
         private string _templateText;
@@ -26,7 +26,15 @@ namespace RaptorFileGenerator
             }
         }
 
-        public FileDefinition(string templatePath)
+        public string TemplateText
+        {
+            get
+            {
+                return _templateText;
+            }
+        }
+
+        public FileTemplate(string templatePath)
         {
             _templatePath = templatePath;
             _templateText = File.ReadAllText(templatePath);
