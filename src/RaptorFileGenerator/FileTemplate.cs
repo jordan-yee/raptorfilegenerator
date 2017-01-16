@@ -43,16 +43,17 @@ namespace RaptorFileGenerator
 
         private string ExpandTemplateText(string templateText)
         {
-            List<string> sections = new List<string>();
+            List<string> allLines = new List<string>();
 
             using(StringReader reader = new StringReader(templateText)) {
                 List<string> currentSectionLines = new List<string>();
 
                 string currentLine;
                 while ((currentLine = reader.ReadLine()) != null) {
+
                     if (currentLine.StartsWith(_nestedFileLinePrefix)) {
                         // Add the current section to the list
-                        sections.Add(string.Concat(currentSectionLines));
+                        allLines.AddRange(currentSectionLines);
                         currentSectionLines.Clear();
 
                         // Recursively get the text from the nested file
@@ -64,13 +65,15 @@ namespace RaptorFileGenerator
                     else {
                         currentSectionLines.Add(currentLine);
                     }
+
                 }
 
                 // Add remainder of current section to the list
-                sections.Add(string.Concat(currentSectionLines));
+                allLines.AddRange(currentSectionLines);
             }
 
-            return string.Concat(sections);
+            string allLinesJoined = string.Join(Environment.NewLine, allLines);
+            return allLinesJoined;
         }
 
         private string GetNestedFilePath(string currentLine)

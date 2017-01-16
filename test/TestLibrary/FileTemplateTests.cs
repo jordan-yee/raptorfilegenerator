@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RaptorFileGenerator;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace TestLibrary
 {
@@ -12,18 +13,89 @@ namespace TestLibrary
     public class FileTemplateTests
     {
         [TestMethod]
-        public void TestFileDefinitionCreation()
+        public void TestBasicFileCreation()
         {
             // arrange
-            string basicFileTemplatePath = @"C:\Users\jyee_\Documents\GitHub\RaptorFileGenerator\test\TestLibrary\TestFilesTemplates\BasicFileTemplate.txt";
-            Regex expectedText = new Regex("Test Template");
+            string templatePath = Path.Combine(FilePaths.TestFileTemplateDirectory, "BasicFileTemplate.txt");
+            string expectedOutputFilePath = Path.Combine(FilePaths.ExpectedTemplateOutputDirectory, "BasicFileOutput.txt");
+            string expectedOutputText = ReadTextFromFile(expectedOutputFilePath);
+            Regex expectedText = new Regex(expectedOutputText);
 
             // act
-            FileTemplate file = new FileTemplate(basicFileTemplatePath);
+            FileTemplate file = new FileTemplate(templatePath);
             string expandedTemplateText = file.TemplateText;
 
             // assert
             StringAssert.Matches(expandedTemplateText, expectedText);
+        }
+
+        [TestMethod]
+        public void TestNestedFileCreation()
+        {
+            // arrange
+            string templatePath = Path.Combine(FilePaths.TestFileTemplateDirectory, "NestedFileTemplate.txt");
+            string expectedOutputFilePath = Path.Combine(FilePaths.ExpectedTemplateOutputDirectory, "NestedFileOutput.txt");
+            string expectedOutputText = ReadTextFromFile(expectedOutputFilePath);
+            Regex expectedText = new Regex(expectedOutputText);
+
+            // act
+            FileTemplate file = new FileTemplate(templatePath);
+            string expandedTemplateText = file.TemplateText;
+
+            // assert
+            StringAssert.Matches(expandedTemplateText, expectedText);
+        }
+
+        private string ReadTextFromFile(string filePath)
+        {
+            string fileContents = "Test file contents";
+
+            try {
+                fileContents = File.ReadAllText(filePath);
+            }
+            catch (Exception) {
+                Assert.Fail("Failed to read a test data file. Make sure test file paths are correct.");
+            }
+
+            return fileContents;
+        }
+
+        [TestMethod]
+        public void BadFilePathThrowsException()
+        {
+            // arrange
+            string badTemplatePath = "foo";
+
+            // act
+            bool exceptionWasThrown = false;
+            try {
+                FileTemplate file = new FileTemplate(badTemplatePath);
+            }
+            catch (Exception) {
+                exceptionWasThrown = true;
+            }
+
+            // assert
+            Assert.IsTrue(exceptionWasThrown);
+        }
+
+        [TestMethod]
+        public void NullFilePathThrowsException()
+        {
+            // arrange
+            string badTemplatePath = null;
+
+            // act
+            bool exceptionWasThrown = false;
+            try {
+                FileTemplate file = new FileTemplate(badTemplatePath);
+            }
+            catch (Exception) {
+                exceptionWasThrown = true;
+            }
+
+            // assert
+            Assert.IsTrue(exceptionWasThrown);
         }
     }
 }
