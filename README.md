@@ -1,2 +1,2 @@
-# raptorfilegenerator
-A .NET Core class library for generating custom text (code) files.
+# Raptor File Generator
+## A .NET Core class library for generating custom text (code) files.
