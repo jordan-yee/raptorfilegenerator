@@ -10,7 +10,7 @@ using System.IO;
 namespace TestLibrary
 {
     [TestClass]
-    public class FileTemplateTests
+    public class TemplateExpanderTests
     {
         [TestMethod]
         public void TestBasicFileCreation()
@@ -22,7 +22,7 @@ namespace TestLibrary
             Regex expectedText = new Regex(expectedOutputText);
 
             // act
-            FileTemplate file = new FileTemplate(templatePath);
+            TemplateExpander file = new TemplateExpander(templatePath);
             string expandedTemplateText = file.TemplateText;
 
             // assert
@@ -39,7 +39,7 @@ namespace TestLibrary
             Regex expectedText = new Regex(expectedOutputText);
 
             // act
-            FileTemplate file = new FileTemplate(templatePath);
+            TemplateExpander file = new TemplateExpander(templatePath);
             string expandedTemplateText = file.TemplateText;
 
             // assert
@@ -69,7 +69,7 @@ namespace TestLibrary
             // act
             bool exceptionWasThrown = false;
             try {
-                FileTemplate file = new FileTemplate(badTemplatePath);
+                TemplateExpander file = new TemplateExpander(badTemplatePath);
             }
             catch (Exception) {
                 exceptionWasThrown = true;
@@ -88,7 +88,7 @@ namespace TestLibrary
             // act
             bool exceptionWasThrown = false;
             try {
-                FileTemplate file = new FileTemplate(badTemplatePath);
+                TemplateExpander file = new TemplateExpander(badTemplatePath);
             }
             catch (Exception) {
                 exceptionWasThrown = true;

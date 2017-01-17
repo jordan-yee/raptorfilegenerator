@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RaptorFileGenerator
 {
-    public class FileTemplate
+    public class TemplateExpander
     {
         private string _templatePath;
         private string _templateText;
@@ -21,7 +21,7 @@ namespace RaptorFileGenerator
             }
         }
 
-        public FileTemplate(string templatePath, string nestedFileLinePrefix = "###")
+        public TemplateExpander(string templatePath, string nestedFileLinePrefix = "###")
         {
             _templatePath = templatePath;
             _templateText = ExpandTemplateText(templatePath);
