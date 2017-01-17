@@ -9,7 +9,7 @@ __template.txt:__
 > Hello, World!
 
 ### 2. Embed other text files in your template via their file paths.
-*By default, define embedded files by starting lines with '###' and following them with a file path.*  
+*By default, define embedded files using lines that start with '###' followed by a file path.*  
 __template.txt:__
 > Hello, World!  
 > \### C:\\file.txt
