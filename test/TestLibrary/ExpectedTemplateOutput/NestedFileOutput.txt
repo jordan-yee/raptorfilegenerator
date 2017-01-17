@@ -1,3 +1,4 @@
 ﻿Nested File Test
 Here are the contents of a nested file.
+Here are the contents of a file nested in a nested file.
 End of Nested File Test

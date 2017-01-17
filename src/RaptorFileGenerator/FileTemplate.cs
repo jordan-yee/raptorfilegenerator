@@ -13,19 +13,6 @@ namespace RaptorFileGenerator
         private string _templateText;
         private string _nestedFileLinePrefix = "###";
 
-        public string NestedFileLinePrefix
-        {
-            get
-            {
-                return _nestedFileLinePrefix;
-            }
-
-            set
-            {
-                _nestedFileLinePrefix = value;
-            }
-        }
-
         public string TemplateText
         {
             get
@@ -34,46 +21,43 @@ namespace RaptorFileGenerator
             }
         }
 
-        public FileTemplate(string templatePath)
+        public FileTemplate(string templatePath, string nestedFileLinePrefix = "###")
         {
             _templatePath = templatePath;
-            _templateText = File.ReadAllText(templatePath);
-            _templateText = ExpandTemplateText(_templateText);
+            _templateText = ExpandTemplateText(templatePath);
         }
 
-        private string ExpandTemplateText(string templateText)
+        private string ExpandTemplateText(string templatePath)
         {
-            List<string> allLines = new List<string>();
+            string[] templateLines = File.ReadAllLines(templatePath);
+            string[] expandedTemplateLines = ExpandNestedFileLines(templateLines);
+            string allLinesJoined = string.Join(Environment.NewLine, expandedTemplateLines);
 
-            using(StringReader reader = new StringReader(templateText)) {
-                List<string> currentSectionLines = new List<string>();
+            return allLinesJoined;
+        }
 
-                string currentLine;
-                while ((currentLine = reader.ReadLine()) != null) {
+        private string[] ExpandNestedFileLines(string[] templateLines)
+        {
+            List<string> expandedLines = new List<string>();
 
-                    if (currentLine.StartsWith(_nestedFileLinePrefix)) {
-                        // Add the current section to the list
-                        allLines.AddRange(currentSectionLines);
-                        currentSectionLines.Clear();
-
-                        // Recursively get the text from the nested file
-                        string nestedFilePath = GetNestedFilePath(currentLine);
-                        string nestedFileText = File.ReadAllText(nestedFilePath);
-                        string expandedNestedFileText = ExpandTemplateText(nestedFileText);
-                        currentSectionLines.Add(expandedNestedFileText);
-                    }
-                    else {
-                        currentSectionLines.Add(currentLine);
-                    }
-
-                }
-
-                // Add remainder of current section to the list
-                allLines.AddRange(currentSectionLines);
+            foreach (string line in templateLines) {
+                string expandedLine = GetLineOrNestedFileContents(line);
+                expandedLines.Add(expandedLine);
             }
 
-            string allLinesJoined = string.Join(Environment.NewLine, allLines);
-            return allLinesJoined;
+            return expandedLines.ToArray();
+        }
+
+        private string GetLineOrNestedFileContents(string line)
+        {
+            string expandedLine = line;
+
+            if (line.StartsWith(_nestedFileLinePrefix)) {
+                string nestedFilePath = GetNestedFilePath(line);
+                expandedLine = ExpandTemplateText(nestedFilePath);
+            }
+
+            return expandedLine;
         }
 
         private string GetNestedFilePath(string currentLine)
