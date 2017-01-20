@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RaptorFileGenerator;
 using System.Text.RegularExpressions;
 using System.IO;
+using TestLibrary.TestObjects;
 
 namespace TestLibrary
 {
@@ -213,6 +214,31 @@ namespace TestLibrary
 
             FileData fileData = new FileData();
             fileData.AddTemplateParameterData("MultipleParameterSetsTemplate", parameters);
+
+            TemplateGenerator file = new TemplateGenerator(fileData);
+
+            // act
+            string result = file.GenerateTemplateText(templatePath);
+
+            // assert
+            StringAssert.Matches(result, expectedText);
+        }
+
+        [TestMethod]
+        public void GenerateTemplateFileWithObjectDefinedParameterSets()
+        {
+            // arrange
+            string templatePath = Path.Combine(FilePaths.TestFileTemplateDirectory, "MultipleParameterSetsTemplate.txt");
+            string expectedOutputFilePath = Path.Combine(FilePaths.ExpectedTemplateOutputDirectory, "MultipleParameterSetsOutput.txt");
+            string expectedOutputText = ReadTextFromFile(expectedOutputFilePath);
+            Regex expectedText = new Regex(Regex.Escape(expectedOutputText));
+
+            Person[] people = new Person[2];
+            people[0] = new Person() { Name = "James", };
+            people[1] = new Person() { Name = "John" };
+
+            FileData fileData = new FileData();
+            fileData.AddTemplateParameterData("MultipleParameterSetsTemplate", people);
 
             TemplateGenerator file = new TemplateGenerator(fileData);
 
