@@ -46,20 +46,6 @@ namespace TestLibrary
             StringAssert.Matches(expandedTemplateText, expectedText);
         }
 
-        private string ReadTextFromFile(string filePath)
-        {
-            string fileContents = "Test file contents";
-
-            try {
-                fileContents = File.ReadAllText(filePath);
-            }
-            catch (Exception) {
-                Assert.Fail("Failed to read a test data file. Make sure test file paths are correct.");
-            }
-
-            return fileContents;
-        }
-
         [TestMethod]
         [ExpectedException(typeof(Exception), AllowDerivedTypes = true)]
         public void BadFilePathThrowsException()
@@ -101,11 +87,97 @@ namespace TestLibrary
             Regex expectedText = new Regex(expectedOutputText);
 
             // act
-            TemplateGenerator file = new TemplateGenerator(nestedFileLinePrefix);
+            TemplateGenerator file = new TemplateGenerator(null, nestedFileLinePrefix);
             string expandedTemplateText = file.ExpandTemplateText(templatePath);
 
             // assert
             StringAssert.Matches(expandedTemplateText, expectedText);
+        }
+
+        [TestMethod]
+        public void ConstructorArgumentsCanBeNull()
+        {
+            // arrange
+            string templatePath = Path.Combine(FilePaths.TestFileTemplateDirectory, "BasicFileTemplate.txt");
+            string expectedOutputFilePath = Path.Combine(FilePaths.ExpectedTemplateOutputDirectory, "BasicFileOutput.txt");
+            string expectedOutputText = ReadTextFromFile(expectedOutputFilePath);
+            Regex expectedText = new Regex(expectedOutputText);
+
+            // act
+            TemplateGenerator file = new TemplateGenerator(null, null);
+            string expandedTemplateText = file.ExpandTemplateText(templatePath);
+
+            // assert
+            StringAssert.Matches(expandedTemplateText, expectedText);
+        }
+
+        [TestMethod]
+        public void PublicPropertiesCanBeSetNull()
+        {
+            // arrange
+            string templatePath = Path.Combine(FilePaths.TestFileTemplateDirectory, "BasicFileTemplate.txt");
+            string expectedOutputFilePath = Path.Combine(FilePaths.ExpectedTemplateOutputDirectory, "BasicFileOutput.txt");
+            string expectedOutputText = ReadTextFromFile(expectedOutputFilePath);
+            Regex expectedText = new Regex(expectedOutputText);
+
+            // act
+            TemplateGenerator file = new TemplateGenerator();
+            file.NestedFileLinePrefix = null;
+            file.FileData = null;
+            string expandedTemplateText = file.ExpandTemplateText(templatePath);
+
+            // assert
+            StringAssert.Matches(expandedTemplateText, expectedText);
+        }
+
+        [TestMethod]
+        public void NestedFileLinePrefix_NullToDefault_NestedFileCreation()
+        {
+            // arrange
+            string templatePath = Path.Combine(FilePaths.TestFileTemplateDirectory, "NestedFileTemplate.txt");
+            string expectedOutputFilePath = Path.Combine(FilePaths.ExpectedTemplateOutputDirectory, "NestedFileOutput.txt");
+            string expectedOutputText = ReadTextFromFile(expectedOutputFilePath);
+            Regex expectedText = new Regex(expectedOutputText);
+
+            // act
+            TemplateGenerator file = new TemplateGenerator();
+            file.NestedFileLinePrefix = null;
+            string expandedTemplateText = file.ExpandTemplateText(templatePath);
+
+            // assert
+            StringAssert.Matches(expandedTemplateText, expectedText);
+        }
+
+        [TestMethod]
+        public void NestedFileLinePrefix_WhiteSpaceToDefault_NestedFileCreation()
+        {
+            // arrange
+            string templatePath = Path.Combine(FilePaths.TestFileTemplateDirectory, "NestedFileTemplate.txt");
+            string expectedOutputFilePath = Path.Combine(FilePaths.ExpectedTemplateOutputDirectory, "NestedFileOutput.txt");
+            string expectedOutputText = ReadTextFromFile(expectedOutputFilePath);
+            Regex expectedText = new Regex(expectedOutputText);
+
+            // act
+            TemplateGenerator file = new TemplateGenerator();
+            file.NestedFileLinePrefix = " ";
+            string expandedTemplateText = file.ExpandTemplateText(templatePath);
+
+            // assert
+            StringAssert.Matches(expandedTemplateText, expectedText);
+        }
+
+        private string ReadTextFromFile(string filePath)
+        {
+            string fileContents = "Test file contents";
+
+            try {
+                fileContents = File.ReadAllText(filePath);
+            }
+            catch (Exception) {
+                Assert.Fail("Failed to read a test data file. Make sure test file paths are correct.");
+            }
+
+            return fileContents;
         }
     }
 }
