@@ -23,7 +23,7 @@ namespace TestLibrary
 
             // act
             TemplateGenerator file = new TemplateGenerator();
-            string expandedTemplateText = file.ExpandTemplateText(templatePath);
+            string expandedTemplateText = file.GenerateTemplateText(templatePath);
 
             // assert
             StringAssert.Matches(expandedTemplateText, expectedText);
@@ -40,7 +40,7 @@ namespace TestLibrary
 
             // act
             TemplateGenerator file = new TemplateGenerator();
-            string expandedTemplateText = file.ExpandTemplateText(templatePath);
+            string expandedTemplateText = file.GenerateTemplateText(templatePath);
 
             // assert
             StringAssert.Matches(expandedTemplateText, expectedText);
@@ -55,7 +55,7 @@ namespace TestLibrary
 
             // act
             TemplateGenerator file = new TemplateGenerator();
-            file.ExpandTemplateText(badTemplatePath);
+            file.GenerateTemplateText(badTemplatePath);
 
             // assert
             // Should throw an exception do to a bad file path.
@@ -70,7 +70,7 @@ namespace TestLibrary
 
             // act
             TemplateGenerator file = new TemplateGenerator();
-            file.ExpandTemplateText(badTemplatePath);
+            file.GenerateTemplateText(badTemplatePath);
 
             // assert
             // Should throw an exception do to a null file path.
@@ -88,7 +88,7 @@ namespace TestLibrary
 
             // act
             TemplateGenerator file = new TemplateGenerator(null, nestedFileLinePrefix);
-            string expandedTemplateText = file.ExpandTemplateText(templatePath);
+            string expandedTemplateText = file.GenerateTemplateText(templatePath);
 
             // assert
             StringAssert.Matches(expandedTemplateText, expectedText);
@@ -105,7 +105,7 @@ namespace TestLibrary
 
             // act
             TemplateGenerator file = new TemplateGenerator(null, null);
-            string expandedTemplateText = file.ExpandTemplateText(templatePath);
+            string expandedTemplateText = file.GenerateTemplateText(templatePath);
 
             // assert
             StringAssert.Matches(expandedTemplateText, expectedText);
@@ -124,7 +124,7 @@ namespace TestLibrary
             TemplateGenerator file = new TemplateGenerator();
             file.NestedFileLinePrefix = null;
             file.FileData = null;
-            string expandedTemplateText = file.ExpandTemplateText(templatePath);
+            string expandedTemplateText = file.GenerateTemplateText(templatePath);
 
             // assert
             StringAssert.Matches(expandedTemplateText, expectedText);
@@ -142,7 +142,7 @@ namespace TestLibrary
             // act
             TemplateGenerator file = new TemplateGenerator();
             file.NestedFileLinePrefix = null;
-            string expandedTemplateText = file.ExpandTemplateText(templatePath);
+            string expandedTemplateText = file.GenerateTemplateText(templatePath);
 
             // assert
             StringAssert.Matches(expandedTemplateText, expectedText);
@@ -160,10 +160,36 @@ namespace TestLibrary
             // act
             TemplateGenerator file = new TemplateGenerator();
             file.NestedFileLinePrefix = " ";
-            string expandedTemplateText = file.ExpandTemplateText(templatePath);
+            string expandedTemplateText = file.GenerateTemplateText(templatePath);
 
             // assert
             StringAssert.Matches(expandedTemplateText, expectedText);
+        }
+
+        [TestMethod]
+        public void GenerateTemplateFileWithTemplateParameters()
+        {
+            // arrange
+            string templatePath = Path.Combine(FilePaths.TestFileTemplateDirectory, "NestedFileWithParametersTemplate.txt");
+            string expectedOutputFilePath = Path.Combine(FilePaths.ExpectedTemplateOutputDirectory, "NestedFileWithParametersOutput.txt");
+            string expectedOutputText = ReadTextFromFile(expectedOutputFilePath);
+            Regex expectedText = new Regex(Regex.Escape(expectedOutputText));
+
+            FileData fileData = new FileData();
+            Dictionary<string, string> parametersForNestedFileWithParameters = new Dictionary<string, string>();
+            parametersForNestedFileWithParameters.Add("parameter", "test parameter");
+            Dictionary<string, string> parametersForSubNestedFileWithParameters = new Dictionary<string, string>();
+            parametersForSubNestedFileWithParameters.Add("parameter", "sub test parameter");
+            fileData.AddTemplateParameterData("NestedFileWithParametersTemplate", parametersForNestedFileWithParameters);
+            fileData.AddTemplateParameterData("SubNestedFileWithParametersTemplate", parametersForSubNestedFileWithParameters);
+
+            TemplateGenerator file = new TemplateGenerator(fileData);
+
+            // act
+            string result = file.GenerateTemplateText(templatePath);
+
+            // assert
+            StringAssert.Matches(result, expectedText);
         }
 
         private string ReadTextFromFile(string filePath)

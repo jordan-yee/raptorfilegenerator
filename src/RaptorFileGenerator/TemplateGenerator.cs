@@ -57,13 +57,25 @@ namespace RaptorFileGenerator
         }
         #endregion
 
-        public string ExpandTemplateText(string templatePath)
+        public string GenerateTemplateText(string templatePath)
         {
             string[] templateLines = File.ReadAllLines(templatePath);
+            templateLines = InjectTemplateParameters(templatePath, templateLines);
             string[] expandedTemplateLines = ExpandNestedFileLines(templateLines);
             string allLinesJoined = string.Join(Environment.NewLine, expandedTemplateLines);
 
             return allLinesJoined;
+        }
+
+        private string[] InjectTemplateParameters(string templatePath, string[] templateLines)
+        {
+            string templateText = string.Join(Environment.NewLine, templateLines);
+            Dictionary<string, string> templateParameters = _fileData.GetTemplateParameters(templatePath);
+            ParameterInjector parameterInjector = new ParameterInjector(templateText, templateParameters);
+            string injectedTemplateText = parameterInjector.GetInjectedText();
+            string[] injectedTemplateTextLines = injectedTemplateText.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+
+            return injectedTemplateTextLines;
         }
 
         private string[] ExpandNestedFileLines(string[] templateLines)
@@ -84,7 +96,7 @@ namespace RaptorFileGenerator
 
             if (line.StartsWith(NestedFileLinePrefix)) {
                 string nestedFilePath = GetNestedFilePath(line);
-                expandedLine = ExpandTemplateText(nestedFilePath);
+                expandedLine = GenerateTemplateText(nestedFilePath);
             }
 
             return expandedLine;

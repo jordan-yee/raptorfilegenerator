@@ -1,0 +1,3 @@
+﻿Nested File With Parameters Test (Parameter: {{parameter}})
+### C:\Users\jyee_\Documents\GitHub\RaptorFileGenerator\test\TestLibrary\TestFileTemplates\SubNestedFileWithParametersTemplate.txt
+End of Nested File With Parameters Test
