@@ -1,0 +1,3 @@
+﻿Alternate Prefix Nested File Test
+Here are the contents of a nested file, referenced with an alternate prefix.
+End of Nested File Test

@@ -129,15 +129,6 @@ public class ParameterInjector
         }
     }
 
-    private string InjectParameterValue(string text, string parameterName)
-    {
-        string parameterPattern = _startingParameterDelimitter + " *" + parameterName + " *" + _endingParameterDelimitter;
-        string parameterReplacementValue = _parameters[parameterName];
-        text = Regex.Replace(text, parameterPattern, parameterReplacementValue);
-
-        return text;
-    }
-
     private string[] GetParameterNamesFromDictionary()
     {
         List<string> keys = new List<string>();
@@ -146,5 +137,14 @@ public class ParameterInjector
         }
 
         return keys.ToArray();
+    }
+
+    private string InjectParameterValue(string text, string parameterName)
+    {
+        string parameterPattern = _startingParameterDelimitter + " *" + parameterName + " *" + _endingParameterDelimitter;
+        string parameterReplacementValue = _parameters[parameterName];
+        text = Regex.Replace(text, parameterPattern, parameterReplacementValue);
+
+        return text;
     }
 }

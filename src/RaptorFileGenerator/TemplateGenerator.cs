@@ -7,27 +7,28 @@ using System.Threading.Tasks;
 
 namespace RaptorFileGenerator
 {
-    public class TemplateExpander
+    public class TemplateGenerator
     {
-        private string _templatePath;
-        private string _templateText;
-        private string _nestedFileLinePrefix = "###";
+        private string _nestedFileLinePrefix;
+        private FileData _fileData;
 
-        public string TemplateText
+        public TemplateGenerator(string nestedFileLinePrefix = "###")
         {
-            get
-            {
-                return _templateText;
-            }
+            CommonConstructor(new FileData(), nestedFileLinePrefix);
         }
 
-        public TemplateExpander(string templatePath, string nestedFileLinePrefix = "###")
+        public TemplateGenerator(FileData fileData, string nestedFileLinePrefix = "###")
         {
-            _templatePath = templatePath;
-            _templateText = ExpandTemplateText(templatePath);
+            CommonConstructor(fileData, nestedFileLinePrefix);
         }
 
-        private string ExpandTemplateText(string templatePath)
+        private void CommonConstructor(FileData fileData, string nestedFileLinePrefix)
+        {
+            _nestedFileLinePrefix = nestedFileLinePrefix;
+            _fileData = fileData;
+        }
+
+        public string ExpandTemplateText(string templatePath)
         {
             string[] templateLines = File.ReadAllLines(templatePath);
             string[] expandedTemplateLines = ExpandNestedFileLines(templateLines);
