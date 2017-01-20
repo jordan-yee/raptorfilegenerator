@@ -69,13 +69,50 @@ namespace RaptorFileGenerator
 
         private string[] InjectTemplateParameters(string templatePath, string[] templateLines)
         {
-            string templateText = string.Join(Environment.NewLine, templateLines);
-            Dictionary<string, string> templateParameters = _fileData.GetTemplateParameters(templatePath);
-            ParameterInjector parameterInjector = new ParameterInjector(templateText, templateParameters);
-            string injectedTemplateText = parameterInjector.GetInjectedText();
-            string[] injectedTemplateTextLines = injectedTemplateText.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            Dictionary<string, string>[] templateParameterSets = _fileData.GetTemplateParameters(templatePath);
+
+            // If template has no parameters, return the lines as is.
+            if(templateParameterSets.Length == 0) {
+                return templateLines;
+            }
+
+            List<string> templateTextForEachParameterSet = GetInjectedTemplateTextForEachParameterSet(templateLines, templateParameterSets);
+            List<string> injectedTemplateTextLines = GetAllTemplateTextInstanceLines(templateTextForEachParameterSet);
+
+            return injectedTemplateTextLines.ToArray();
+        }
+
+        private List<string> GetInjectedTemplateTextForEachParameterSet(string[] templateLines, Dictionary<string, string>[] templateParameterSets)
+        {
+            List<string> templateTextForEachParameterSet = new List<string>();
+
+            foreach (Dictionary<string, string> parameterSet in templateParameterSets) {
+                string templateTextForCurrentParameterSet = GetTemplateTextForParameterSet(templateLines, parameterSet);
+                templateTextForEachParameterSet.Add(templateTextForCurrentParameterSet);
+            }
+
+            return templateTextForEachParameterSet;
+        }
+
+        private static List<string> GetAllTemplateTextInstanceLines(List<string> templateTextForEachParameterSet)
+        {
+            List<string> injectedTemplateTextLines = new List<string>();
+
+            foreach (string templateTextInstance in templateTextForEachParameterSet) {
+                string[] templateTextInstanceLines = templateTextInstance.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                injectedTemplateTextLines.AddRange(templateTextInstanceLines);
+            }
 
             return injectedTemplateTextLines;
+        }
+
+        private string GetTemplateTextForParameterSet(string[] templateLines, Dictionary<string, string> parameterSet)
+        {
+            string templateText = string.Join(Environment.NewLine, templateLines);
+            ParameterInjector parameterInjector = new ParameterInjector(templateText, parameterSet);
+            string injectedTemplateText = parameterInjector.GetInjectedText();
+
+            return injectedTemplateText;
         }
 
         private string[] ExpandNestedFileLines(string[] templateLines)

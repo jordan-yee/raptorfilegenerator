@@ -8,14 +8,14 @@ namespace RaptorFileGenerator
 {
     public class FileData
     {
-        private Dictionary<string, Dictionary<string, string>> _fileData;
+        private Dictionary<string, Dictionary<string, string>[]> _fileData;
 
         public FileData()
         {
-            _fileData = new Dictionary<string, Dictionary<string, string>>();
+            _fileData = new Dictionary<string, Dictionary<string, string>[]>();
         }
 
-        public void AddTemplateParameterData(string templateName, Dictionary<string, string> templateParameters)
+        public void AddTemplateParameterData(string templateName, Dictionary<string, string>[] templateParameters)
         {
             if (string.IsNullOrEmpty(templateName)) {
                 throw new ArgumentException("Parameter cannot be null or empty.", "templateName");
@@ -28,7 +28,7 @@ namespace RaptorFileGenerator
             _fileData.Add(templateName, templateParameters);
         }
 
-        public Dictionary<string, string> GetTemplateParameters(string templateNameOrPath)
+        public Dictionary<string, string>[] GetTemplateParameters(string templateNameOrPath)
         {
             if (string.IsNullOrEmpty(templateNameOrPath)) {
                 throw new ArgumentException("Parameter cannot be null or empty.", "templateNameOrPath");
@@ -37,7 +37,7 @@ namespace RaptorFileGenerator
             string templateName = Path.GetFileNameWithoutExtension(templateNameOrPath);
 
             if (!_fileData.ContainsKey(templateName)) {
-                return new Dictionary<string, string>();
+                return new Dictionary<string, string>[0];
             }
 
             return _fileData[templateName];

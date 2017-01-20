@@ -17,7 +17,7 @@ namespace TestLibrary
             // arrange
             FileData fileData = new FileData();
             string templateName = null;
-            Dictionary<string, string> templateParameters = new Dictionary<string, string>();
+            Dictionary<string, string>[] templateParameters = new Dictionary<string, string>[0];
 
             // act
             fileData.AddTemplateParameterData(templateName, templateParameters);
@@ -33,7 +33,7 @@ namespace TestLibrary
             // arrange
             FileData fileData = new FileData();
             string templateName = string.Empty;
-            Dictionary<string, string> templateParameters = new Dictionary<string, string>();
+            Dictionary<string, string>[] templateParameters = new Dictionary<string, string>[0];
 
             // act
             fileData.AddTemplateParameterData(templateName, templateParameters);
@@ -49,7 +49,7 @@ namespace TestLibrary
             // arrange
             FileData fileData = new FileData();
             string templateName = "template";
-            Dictionary<string, string> templateParameters = null;
+            Dictionary<string, string>[] templateParameters = null;
 
             // act
             fileData.AddTemplateParameterData(templateName, templateParameters);
@@ -89,52 +89,54 @@ namespace TestLibrary
         }
 
         [TestMethod]
-        public void GetTemplateParameters_templateNameNotFoundReturnsEmptyDictionary_Test()
+        public void GetTemplateParameters_invalidTemplateNameReturnsEmptyArray_Test()
         {
             // arrange
             FileData fileData = new FileData();
             string templateNameOrPath = "foo";
 
             // act
-            Dictionary<string,string> result = fileData.GetTemplateParameters(templateNameOrPath);
+            Dictionary<string,string>[] result = fileData.GetTemplateParameters(templateNameOrPath);
 
             // assert
-            Assert.IsTrue(result.Count == 0);
+            Assert.IsTrue(result.Length == 0);
         }
 
         [TestMethod]
-        public void GetTemplateParameters_GetDictionaryByTemplateName_Test()
+        public void GetTemplateParameters_GetDataByTemplateName_Test()
         {
             // arrange
             FileData fileData = new FileData();
             string templateName = "template";
-            Dictionary<string, string> templateParameters = new Dictionary<string, string>();
-            templateParameters.Add("parameter", "value");
+            Dictionary<string, string>[] templateParameters = new Dictionary<string, string>[1];
+            templateParameters[0] = new Dictionary<string, string>();
+            templateParameters[0].Add("parameter", "value");
             fileData.AddTemplateParameterData(templateName, templateParameters);
 
             // act
-            Dictionary<string, string> result = fileData.GetTemplateParameters(templateName);
+            Dictionary<string, string>[] result = fileData.GetTemplateParameters(templateName);
 
             // assert
-            Assert.IsTrue(result["parameter"] == "value");
+            Assert.IsTrue(result[0]["parameter"] == "value");
         }
 
         [TestMethod]
-        public void GetTemplateParameters_GetDictionaryByTemplatePath_Test()
+        public void GetTemplateParameters_GetDataByTemplatePath_Test()
         {
             // arrange
             FileData fileData = new FileData();
             string templateName = "template";
             string templatePath = @"C:\template.txt";
-            Dictionary<string, string> templateParameters = new Dictionary<string, string>();
-            templateParameters.Add("parameter", "value");
+            Dictionary<string, string>[] templateParameters = new Dictionary<string, string>[1];
+            templateParameters[0] = new Dictionary<string, string>();
+            templateParameters[0].Add("parameter", "value");
             fileData.AddTemplateParameterData(templateName, templateParameters);
 
             // act
-            Dictionary<string, string> result = fileData.GetTemplateParameters(templatePath);
+            Dictionary<string, string>[] result = fileData.GetTemplateParameters(templatePath);
 
             // assert
-            Assert.IsTrue(result["parameter"] == "value");
+            Assert.IsTrue(result[0]["parameter"] == "value");
         }
     }
 }

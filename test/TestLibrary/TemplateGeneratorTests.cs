@@ -82,7 +82,7 @@ namespace TestLibrary
             // arrange
             string nestedFileLinePrefix = "TEMPLATE";
             string templatePath = Path.Combine(FilePaths.TestFileTemplateDirectory, "AlternatePrefixNestedFileTemplate.txt");
-            string expectedOutputFilePath = Path.Combine(FilePaths.ExpectedTemplateOutputDirectory, "AlternatePrefixNestedFileTemplateOutput.txt");
+            string expectedOutputFilePath = Path.Combine(FilePaths.ExpectedTemplateOutputDirectory, "AlternatePrefixNestedFileOutput.txt");
             string expectedOutputText = ReadTextFromFile(expectedOutputFilePath);
             Regex expectedText = new Regex(expectedOutputText);
 
@@ -176,12 +176,43 @@ namespace TestLibrary
             Regex expectedText = new Regex(Regex.Escape(expectedOutputText));
 
             FileData fileData = new FileData();
-            Dictionary<string, string> parametersForNestedFileWithParameters = new Dictionary<string, string>();
-            parametersForNestedFileWithParameters.Add("parameter", "test parameter");
-            Dictionary<string, string> parametersForSubNestedFileWithParameters = new Dictionary<string, string>();
-            parametersForSubNestedFileWithParameters.Add("parameter", "sub test parameter");
+            Dictionary<string, string>[] parametersForNestedFileWithParameters = new Dictionary<string, string>[1];
+            parametersForNestedFileWithParameters[0] = new Dictionary<string, string>();
+            parametersForNestedFileWithParameters[0].Add("parameter", "test parameter");
+
+            Dictionary<string, string>[] parametersForSubNestedFileWithParameters = new Dictionary<string, string>[1];
+            parametersForSubNestedFileWithParameters[0] = new Dictionary<string, string>();
+            parametersForSubNestedFileWithParameters[0].Add("parameter", "sub test parameter");
+
             fileData.AddTemplateParameterData("NestedFileWithParametersTemplate", parametersForNestedFileWithParameters);
             fileData.AddTemplateParameterData("SubNestedFileWithParametersTemplate", parametersForSubNestedFileWithParameters);
+
+            TemplateGenerator file = new TemplateGenerator(fileData);
+
+            // act
+            string result = file.GenerateTemplateText(templatePath);
+
+            // assert
+            StringAssert.Matches(result, expectedText);
+        }
+
+        [TestMethod]
+        public void GenerateTemplateFileWithMultipleParameterSets()
+        {
+            // arrange
+            string templatePath = Path.Combine(FilePaths.TestFileTemplateDirectory, "MultipleParameterSetsTemplate.txt");
+            string expectedOutputFilePath = Path.Combine(FilePaths.ExpectedTemplateOutputDirectory, "MultipleParameterSetsOutput.txt");
+            string expectedOutputText = ReadTextFromFile(expectedOutputFilePath);
+            Regex expectedText = new Regex(Regex.Escape(expectedOutputText));
+
+            Dictionary<string, string>[] parameters = new Dictionary<string, string>[2];
+            parameters[0] = new Dictionary<string, string>();
+            parameters[0].Add("name", "James");
+            parameters[1] = new Dictionary<string, string>();
+            parameters[1].Add("name", "John");
+
+            FileData fileData = new FileData();
+            fileData.AddTemplateParameterData("MultipleParameterSetsTemplate", parameters);
 
             TemplateGenerator file = new TemplateGenerator(fileData);
 
