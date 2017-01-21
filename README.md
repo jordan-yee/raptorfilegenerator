@@ -29,18 +29,67 @@ __C# Code:__
 	// Define the template path
 	string templatePath = "C:\\template.txt";
 	
+	// Define template parameters
+	Dictionary<string, string>[] parameters = new Dictionary<string, string>[1];
+	parameters[0] = new Dictionary<string, string>();
+	parameters[0].Add("name", "World");
+	
+	FileData fileData = new FileData();
+    fileData.AddTemplateParameterData("template", parameters);
+	
 	// Get the expanded template text
-	TemplateExpander templateFile = new TemplateExpander(templatePath);
-	string templateText = templateFile.TemplateText;
-	
-	// Define your parameters
-	Dictionary<string, string> parameters = new Dictionary<string, string>();
-	parameters.Add("name", "World");
-	
-	// Inject the parameters into the template
-	ParameterInjector pi = new ParameterInjector(templateText, parameters);
-	string result = pi.GetInjectedText();
+	TemplateGenerator templateGenerator = new TemplateGenerator(fileData);
+	string templateText = templateGenerator.GenerateTemplateText(templatePath);
 	
 __Result:__  
 Hello, World!  
+This is a nested file.
+
+### 5. Assign multiple parameter sets to a template's FileData to repeat that template for each parameter set.
+__C# Code:__
+
+	// Define the template path
+	string templatePath = "C:\\template.txt";
+	
+	// Define template parameters
+	Dictionary<string, string>[] parameters = new Dictionary<string, string>[2];
+	parameters[0] = new Dictionary<string, string>();
+	parameters[0].Add("name", "World");
+	parameters[1] = new Dictionary<string, string>();
+	parameters[2].Add("name", "Other World");
+	
+	FileData fileData = new FileData();
+    fileData.AddTemplateParameterData("template", parameters);
+	
+	// Get the expanded template text
+	TemplateGenerator templateGenerator = new TemplateGenerator(fileData);
+	string templateText = templateGenerator.GenerateTemplateText(templatePath);
+	
+__Result:__  
+Hello, World!  
+Hello, Other World!  
+This is a nested file.
+
+### 6. Alternatively assign template parameter values using POCOs
+__C# Code:__
+
+	// Define the template path
+	string templatePath = "C:\\template.txt";
+	
+	// Define template parameters
+	List<ParameterSets> parameters= new ParameterSet[2];
+	parameters.Add(new ParameterSet() { Name = "World", });
+	parameters.Add(new ParameterSet() { Name = "Other World" });
+	
+	FileData fileData = new FileData();
+	// Note: The 3rd parameter is optional--whether to convert parameter objects' property names to camelCase
+    fileData.AddTemplateParameterData("template", parameters, true);
+	
+	// Get the expanded template text
+	TemplateGenerator templateGenerator = new TemplateGenerator(fileData);
+	string templateText = templateGenerator.GenerateTemplateText(templatePath);
+	
+__Result:__  
+Hello, World!  
+Hello, Other World!  
 This is a nested file.
