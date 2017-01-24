@@ -67,12 +67,13 @@ namespace RaptorFileGenerator
             return allLinesJoined;
         }
 
+        #region InjectTemplateParameters
         private string[] InjectTemplateParameters(string templatePath, string[] templateLines)
         {
-            Dictionary<string, string>[] templateParameterSets = _fileData.GetTemplateParameters(templatePath);
+            Dictionary<string, string>[] templateParameterSets = FileData.GetTemplateParameters(templatePath);
 
             // If template has no parameters, return the lines as is.
-            if(templateParameterSets.Length == 0) {
+            if (templateParameterSets.Length == 0) {
                 return templateLines;
             }
 
@@ -94,6 +95,15 @@ namespace RaptorFileGenerator
             return templateTextForEachParameterSet;
         }
 
+        private string GetTemplateTextForParameterSet(string[] templateLines, Dictionary<string, string> parameterSet)
+        {
+            string templateText = string.Join(Environment.NewLine, templateLines);
+            ParameterInjector parameterInjector = new ParameterInjector(templateText, parameterSet);
+            string injectedTemplateText = parameterInjector.GetInjectedText();
+
+            return injectedTemplateText;
+        }
+
         private static List<string> GetAllTemplateTextInstanceLines(List<string> templateTextForEachParameterSet)
         {
             List<string> injectedTemplateTextLines = new List<string>();
@@ -105,16 +115,9 @@ namespace RaptorFileGenerator
 
             return injectedTemplateTextLines;
         }
+        #endregion
 
-        private string GetTemplateTextForParameterSet(string[] templateLines, Dictionary<string, string> parameterSet)
-        {
-            string templateText = string.Join(Environment.NewLine, templateLines);
-            ParameterInjector parameterInjector = new ParameterInjector(templateText, parameterSet);
-            string injectedTemplateText = parameterInjector.GetInjectedText();
-
-            return injectedTemplateText;
-        }
-
+        #region ExpandNestedFileLines
         private string[] ExpandNestedFileLines(string[] templateLines)
         {
             List<string> expandedLines = new List<string>();
@@ -148,5 +151,6 @@ namespace RaptorFileGenerator
 
             return nestedFilePath;
         }
+        #endregion
     }
 }

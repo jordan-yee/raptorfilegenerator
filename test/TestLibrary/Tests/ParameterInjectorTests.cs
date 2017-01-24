@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RaptorFileGenerator;
 using System.Text.RegularExpressions;
 
-namespace TestLibrary
+namespace TestLibrary.Tests
 {
     [TestClass]
     public class ParameterInjectorTests

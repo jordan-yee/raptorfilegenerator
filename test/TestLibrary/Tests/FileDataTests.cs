@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RaptorFileGenerator;
 
-namespace TestLibrary
+namespace TestLibrary.Tests
 {
     [TestClass]
     public class FileDataTests
