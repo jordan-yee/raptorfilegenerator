@@ -76,7 +76,7 @@ namespace TestLibrary.Tests
         }
 
         [TestMethod]
-        public void ChangeNestedFilePrefix()
+        public void CanChangeNestedFilePrefix()
         {
             // arrange
             string nestedFileLinePrefix = "TEMPLATE";
@@ -122,7 +122,7 @@ namespace TestLibrary.Tests
             // act
             TemplateGenerator file = new TemplateGenerator();
             file.NestedFileLinePrefix = null;
-            file.FileData = null;
+            file.TemplateData = null;
             string expandedTemplateText = file.GenerateTemplateText(templatePath);
 
             // assert
@@ -174,7 +174,7 @@ namespace TestLibrary.Tests
             string expectedOutputText = ReadTextFromFile(expectedOutputFilePath);
             Regex expectedText = new Regex(Regex.Escape(expectedOutputText));
 
-            FileData fileData = new FileData();
+            TemplateData templateData = new TemplateData();
             Dictionary<string, string>[] parametersForNestedFileWithParameters = new Dictionary<string, string>[1];
             parametersForNestedFileWithParameters[0] = new Dictionary<string, string>();
             parametersForNestedFileWithParameters[0].Add("parameter", "test parameter");
@@ -183,10 +183,10 @@ namespace TestLibrary.Tests
             parametersForSubNestedFileWithParameters[0] = new Dictionary<string, string>();
             parametersForSubNestedFileWithParameters[0].Add("parameter", "sub test parameter");
 
-            fileData.AddTemplateParameterData("NestedFileWithParametersTemplate", parametersForNestedFileWithParameters);
-            fileData.AddTemplateParameterData("SubNestedFileWithParametersTemplate", parametersForSubNestedFileWithParameters);
+            templateData.AddTemplateParameterData("NestedFileWithParametersTemplate", parametersForNestedFileWithParameters);
+            templateData.AddTemplateParameterData("SubNestedFileWithParametersTemplate", parametersForSubNestedFileWithParameters);
 
-            TemplateGenerator file = new TemplateGenerator(fileData);
+            TemplateGenerator file = new TemplateGenerator(templateData);
 
             // act
             string result = file.GenerateTemplateText(templatePath);
@@ -196,7 +196,7 @@ namespace TestLibrary.Tests
         }
 
         [TestMethod]
-        public void GenerateTemplateFileWithMultipleParameterSets()
+        public void GenerateTemplateFileWithMultipleDictionaryParameterSets()
         {
             // arrange
             string templatePath = Path.Combine(FilePaths.TestFileTemplateDirectory, "MultipleParameterSetsTemplate.txt");
@@ -210,10 +210,10 @@ namespace TestLibrary.Tests
             parameters[1] = new Dictionary<string, string>();
             parameters[1].Add("name", "John");
 
-            FileData fileData = new FileData();
-            fileData.AddTemplateParameterData("MultipleParameterSetsTemplate", parameters);
+            TemplateData templateData = new TemplateData();
+            templateData.AddTemplateParameterData("MultipleParameterSetsTemplate", parameters);
 
-            TemplateGenerator file = new TemplateGenerator(fileData);
+            TemplateGenerator file = new TemplateGenerator(templateData);
 
             // act
             string result = file.GenerateTemplateText(templatePath);
@@ -223,7 +223,7 @@ namespace TestLibrary.Tests
         }
 
         [TestMethod]
-        public void GenerateTemplateFileWithObjectDefinedParameterSets()
+        public void GenerateTemplateFileWithMultipleObjectParameterSets()
         {
             // arrange
             string templatePath = Path.Combine(FilePaths.TestFileTemplateDirectory, "MultipleParameterSetsTemplate.txt");
@@ -235,10 +235,10 @@ namespace TestLibrary.Tests
             people[0] = new Person() { Name = "James", };
             people[1] = new Person() { Name = "John" };
 
-            FileData fileData = new FileData();
-            fileData.AddTemplateParameterData("MultipleParameterSetsTemplate", people);
+            TemplateData templateData = new TemplateData();
+            templateData.AddTemplateParameterData("MultipleParameterSetsTemplate", people);
 
-            TemplateGenerator file = new TemplateGenerator(fileData);
+            TemplateGenerator file = new TemplateGenerator(templateData);
 
             // act
             string result = file.GenerateTemplateText(templatePath);

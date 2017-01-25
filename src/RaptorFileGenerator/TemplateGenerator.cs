@@ -11,8 +11,12 @@ namespace RaptorFileGenerator
     public class TemplateGenerator
     {
         private const string DEFAULT_FILE_LINE_PREFIX = "###";
+
+        // All user-definable parameters
         private string _nestedFileLinePrefix;
-        private FileData _fileData;
+        private TemplateData _templateData;
+        // TODO: ParameterInjectorOptions
+        // TODO: Template root directory (TemplateOptions w/ nestedFileLinePrefix)
 
         public string NestedFileLinePrefix
         {
@@ -27,16 +31,16 @@ namespace RaptorFileGenerator
             }
         }
 
-        public FileData FileData
+        public TemplateData TemplateData
         {
             get
             {
-                return _fileData;
+                return _templateData;
             }
 
             set
             {
-                _fileData = value == null ? new FileData() : value;
+                _templateData = value == null ? new TemplateData() : value;
             }
         }
 
@@ -46,32 +50,32 @@ namespace RaptorFileGenerator
             CommonConstructor(null, null);
         }
 
-        public TemplateGenerator(FileData fileData, string nestedFileLinePrefix = DEFAULT_FILE_LINE_PREFIX)
+        public TemplateGenerator(TemplateData templateData, string nestedFileLinePrefix = DEFAULT_FILE_LINE_PREFIX)
         {
-            CommonConstructor(fileData, nestedFileLinePrefix);
+            CommonConstructor(templateData, nestedFileLinePrefix);
         }
 
-        private void CommonConstructor(FileData fileData, string nestedFileLinePrefix)
+        private void CommonConstructor(TemplateData templateData, string nestedFileLinePrefix)
         {
             NestedFileLinePrefix = nestedFileLinePrefix;
-            FileData = fileData;
+            TemplateData = templateData;
         }
         #endregion
 
         public string GenerateTemplateText(string templatePath)
         {
+            // Generate this template
             string templateText = File.ReadAllText(templatePath);
-
-            Dictionary<string, string>[] templateParameterSets = FileData.GetTemplateParameters(templatePath);
+            Dictionary<string, string>[] templateParameterSets = _templateData.GetTemplateParameters(templatePath);
             TemplateInstancer instancer = new TemplateInstancer(templateText, templateParameterSets);
             templateText = instancer.GetCombinedTemplateInstances();
 
+            // Recursively generate nested templates
             string expandedTemplateText = ExpandNestedFileLines(templateText);
 
             return expandedTemplateText;
         }
 
-        // Replaces nested template references with their referenced templates.
         #region ExpandNestedFileLines
         private string ExpandNestedFileLines(string templateText)
         {
@@ -94,6 +98,8 @@ namespace RaptorFileGenerator
 
             if (line.StartsWith(NestedFileLinePrefix)) {
                 string nestedFilePath = GetNestedFilePath(line);
+
+                // Recurse:
                 expandedLine = GenerateTemplateText(nestedFilePath);
             }
 
@@ -102,6 +108,7 @@ namespace RaptorFileGenerator
 
         private string GetNestedFilePath(string currentLine)
         {
+            // TODO: Detect if complete file path is given, or if path is relative to template root directory.
             Regex nestedFilePathRegex = new Regex($"^{NestedFileLinePrefix} *(.+)$");
             Match nestedFilePathMatch = nestedFilePathRegex.Match(currentLine);
             Group nestedFilePathGroup = nestedFilePathMatch.Groups[1];

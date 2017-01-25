@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace RaptorFileGenerator
 {
-    public class FileData
+    public class TemplateData
     {
-        private Dictionary<string, Dictionary<string, string>[]> _fileData;
+        private Dictionary<string, Dictionary<string, string>[]> _templateData;
 
-        public FileData()
+        public TemplateData()
         {
-            _fileData = new Dictionary<string, Dictionary<string, string>[]>();
+            _templateData = new Dictionary<string, Dictionary<string, string>[]>();
         }
 
         public void AddTemplateParameterData<T>(string templateName, IEnumerable<T> templateParameters, bool convertPropertyNamesToCamelCase = true)
@@ -65,7 +65,7 @@ namespace RaptorFileGenerator
                 throw new ArgumentNullException("templateParameters");
             }
 
-            _fileData.Add(templateName, templateParameters);
+            _templateData.Add(templateName, templateParameters);
         }
 
         public Dictionary<string, string>[] GetTemplateParameters(string templateNameOrPath)
@@ -76,11 +76,11 @@ namespace RaptorFileGenerator
 
             string templateName = Path.GetFileNameWithoutExtension(templateNameOrPath);
 
-            if (!_fileData.ContainsKey(templateName)) {
+            if (!_templateData.ContainsKey(templateName)) {
                 return new Dictionary<string, string>[0];
             }
 
-            return _fileData[templateName];
+            return _templateData[templateName];
         }
     }
 }
