@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
+// TODO: Extract ParameterInjectorOptions, allowing them to be set by other classes using this class.
 public class ParameterInjector
 {
     private string _input;

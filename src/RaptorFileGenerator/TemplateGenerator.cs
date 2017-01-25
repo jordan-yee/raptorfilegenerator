@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using RaptorFileGenerator.Text;
 
 namespace RaptorFileGenerator
 {
@@ -59,67 +60,22 @@ namespace RaptorFileGenerator
 
         public string GenerateTemplateText(string templatePath)
         {
-            string[] templateLines = File.ReadAllLines(templatePath);
-            templateLines = InjectTemplateParameters(templatePath, templateLines);
-            string[] expandedTemplateLines = ExpandNestedFileLines(templateLines);
-            string allLinesJoined = string.Join(Environment.NewLine, expandedTemplateLines);
+            string templateText = File.ReadAllText(templatePath);
 
-            return allLinesJoined;
-        }
-
-        #region InjectTemplateParameters
-        private string[] InjectTemplateParameters(string templatePath, string[] templateLines)
-        {
             Dictionary<string, string>[] templateParameterSets = FileData.GetTemplateParameters(templatePath);
+            TemplateInstancer instancer = new TemplateInstancer(templateText, templateParameterSets);
+            templateText = instancer.GetCombinedTemplateInstances();
 
-            // If template has no parameters, return the lines as is.
-            if (templateParameterSets.Length == 0) {
-                return templateLines;
-            }
+            string expandedTemplateText = ExpandNestedFileLines(templateText);
 
-            List<string> templateTextForEachParameterSet = GetInjectedTemplateTextForEachParameterSet(templateLines, templateParameterSets);
-            List<string> injectedTemplateTextLines = GetAllTemplateTextInstanceLines(templateTextForEachParameterSet);
-
-            return injectedTemplateTextLines.ToArray();
+            return expandedTemplateText;
         }
 
-        private List<string> GetInjectedTemplateTextForEachParameterSet(string[] templateLines, Dictionary<string, string>[] templateParameterSets)
-        {
-            List<string> templateTextForEachParameterSet = new List<string>();
-
-            foreach (Dictionary<string, string> parameterSet in templateParameterSets) {
-                string templateTextForCurrentParameterSet = GetTemplateTextForParameterSet(templateLines, parameterSet);
-                templateTextForEachParameterSet.Add(templateTextForCurrentParameterSet);
-            }
-
-            return templateTextForEachParameterSet;
-        }
-
-        private string GetTemplateTextForParameterSet(string[] templateLines, Dictionary<string, string> parameterSet)
-        {
-            string templateText = string.Join(Environment.NewLine, templateLines);
-            ParameterInjector parameterInjector = new ParameterInjector(templateText, parameterSet);
-            string injectedTemplateText = parameterInjector.GetInjectedText();
-
-            return injectedTemplateText;
-        }
-
-        private static List<string> GetAllTemplateTextInstanceLines(List<string> templateTextForEachParameterSet)
-        {
-            List<string> injectedTemplateTextLines = new List<string>();
-
-            foreach (string templateTextInstance in templateTextForEachParameterSet) {
-                string[] templateTextInstanceLines = templateTextInstance.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-                injectedTemplateTextLines.AddRange(templateTextInstanceLines);
-            }
-
-            return injectedTemplateTextLines;
-        }
-        #endregion
-
+        // Replaces nested template references with their referenced templates.
         #region ExpandNestedFileLines
-        private string[] ExpandNestedFileLines(string[] templateLines)
+        private string ExpandNestedFileLines(string templateText)
         {
+            string[] templateLines = LineConverter.GetLinesFromText(templateText);
             List<string> expandedLines = new List<string>();
 
             foreach (string line in templateLines) {
@@ -127,7 +83,9 @@ namespace RaptorFileGenerator
                 expandedLines.Add(expandedLine);
             }
 
-            return expandedLines.ToArray();
+            string expandedTemplateText = LineConverter.GetTextFromLines(expandedLines.ToArray());
+
+            return expandedTemplateText;
         }
 
         private string GetLineOrNestedFileContents(string line)
